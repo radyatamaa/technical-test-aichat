@@ -48,7 +48,7 @@ func main() {
 	// app version
 	appVersion := beego.AppConfig.DefaultString("version", "1")
 	// log path
-	logPath := beego.AppConfig.DefaultString("logPath", "./logs/api_gateway_service.log")
+	logPath := beego.AppConfig.DefaultString("logPath", "./logs/api.log")
 	// init data
 	initData := beego.AppConfig.DefaultString("initData", "true")
 
