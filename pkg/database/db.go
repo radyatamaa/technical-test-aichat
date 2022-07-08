@@ -20,7 +20,7 @@ var (
 	dbInstance        *gorm.DB
 	dbOnce            sync.Once
 	templatePostgres  = "host={host} port={port} user={username} dbname={name} password={password} {options}"
-	templateMysql     = "{username}:{password}@({host}:{port})/{name}?{options}"
+	templateMysql     = "{username}:{password}@tcp({host}:{port})/{name}?{options}"
 	templateSqlServer = "sqlserver://{username}:{password}@{host}:{port}?database={name}&{options}"
 
 	optionPlaceholders = map[string]string{
@@ -29,6 +29,7 @@ var (
 		"{host}":     "host",
 		"{name}":     "name",
 		"{options}":  "options",
+		"{port}" : "port",
 	}
 	maxOpenConn     = 25
 	maxIdleConn     = 25
@@ -70,11 +71,11 @@ func openDB() {
 		logLevel = logger.Silent
 	}
 
-	if db, err := sql.Open("nrpgx", buildDsn(templatePostgres, dbConfig)); err != nil {
+	if _, err := sql.Open("nrpgx", buildDsn(templatePostgres, dbConfig)); err != nil {
 		panic(err)
 	} else {
 		gormDB, err := gorm.Open(
-			getDialectWithExistingConnection(dbConfig, db),
+			getDialect(dbConfig),
 			&gorm.Config{
 				SkipDefaultTransaction: true,
 				PrepareStmt:            true,
@@ -115,9 +116,9 @@ func getDialect(dbConfig map[string]string) gorm.Dialector {
 	case "postgres":
 		return postgres.Open(buildDsn(templatePostgres, dbConfig))
 	case "mssql":
-		return mysql.Open(buildDsn(templateMysql, dbConfig))
-	case "mysql":
 		return sqlserver.Open(buildDsn(templateSqlServer, dbConfig))
+	case "mysql":
+		return mysql.Open(buildDsn(templateMysql, dbConfig))
 	default:
 		return postgres.Open(buildDsn(templatePostgres, dbConfig))
 	}
@@ -129,9 +130,9 @@ func getDialectWithExistingConnection(dbConfig map[string]string, db *sql.DB) go
 	case "postgres":
 		return postgres.New(postgres.Config{Conn: db})
 	case "mssql":
-		return mysql.New(mysql.Config{Conn: db})
-	case "mysql":
 		return sqlserver.New(sqlserver.Config{Conn: db})
+	case "mysql":
+		return mysql.New(mysql.Config{Conn: db})
 	default:
 		return postgres.New(postgres.Config{Conn: db})
 	}
@@ -141,5 +142,6 @@ func buildDsn(template string, dbConfig map[string]string) string {
 	for k, v := range optionPlaceholders {
 		template = strings.Replace(template, k, dbConfig[v], 1)
 	}
-	return strings.Replace(template, "{port}", dbConfig["port"], 1)
+	//template = strings.ReplaceAll(template, "{port}", dbConfig["port"])
+	return template
 }

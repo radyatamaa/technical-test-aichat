@@ -9,7 +9,7 @@ import (
 type CustomerVoucher struct {
 	ID        int            `gorm:"column:id;primarykey;autoIncrement:true"`
 	CustomerID  sql.NullInt32 `gorm:"type:int;column:customer_id"`
-	Customer               Customer       `gorm:"foreignkey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;->"`
+	//Customer               Customer       `gorm:"foreignkey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;->"`
 	VoucherCode string `gorm:"type:varchar(255);column:voucher_code"`
 	IsRedeem bool `gorm:"bool;column:is_redeem"`
 }

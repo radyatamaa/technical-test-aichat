@@ -1,4 +1,4 @@
-module github.com/radyatamaa/go-cqrs-microservices
+module github.com/radyatamaa/technical-test-aichat
 
 go 1.16
 

@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/beego/beego/v2/server/web"
-	"github.com/radyatamaa/go-cqrs-microservices/pkg/helper"
+	"github.com/radyatamaa/technical-test-aichat/pkg/helper"
 )
 
 type ErrorController struct {

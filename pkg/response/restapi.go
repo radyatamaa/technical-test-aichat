@@ -13,7 +13,7 @@ import (
 	beego "github.com/beego/beego/v2/server/web"
 	"github.com/beego/beego/v2/server/web/context"
 	validatorGo "github.com/go-playground/validator/v10"
-	"github.com/radyatamaa/go-cqrs-microservices/pkg/validator"
+	"github.com/radyatamaa/technical-test-aichat/pkg/validator"
 )
 
 type (

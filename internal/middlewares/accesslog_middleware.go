@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	contextBeego "github.com/beego/beego/v2/server/web/context"
-	"github.com/radyatamaa/go-cqrs-microservices/pkg/zaplogger"
+	"github.com/radyatamaa/technical-test-aichat/pkg/zaplogger"
 )
 
 type AccessLogMiddleware struct {

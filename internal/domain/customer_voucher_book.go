@@ -10,9 +10,9 @@ import (
 type CustomerVoucherBook struct {
 	ID        int            `gorm:"column:id;primarykey;autoIncrement:true"`
 	CustomerID  sql.NullInt32 `gorm:"type:int;column:customer_id"`
-	Customer               Customer       `gorm:"foreignkey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;->"`
+	//Customer               Customer       `gorm:"foreignkey:CustomerID"`
 	CustomerVoucherID sql.NullInt32 `gorm:"type:int;column:customer_voucher_id"`
-	CustomerVoucher               CustomerVoucher       `gorm:"foreignkey:CustomerVoucherID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;->"`
+	//CustomerVoucher               CustomerVoucher       `gorm:"foreignkey:CustomerVoucherID"`
 	ExpiredDate 	time.Time `gorm:"column:expired_date"`
 }
 

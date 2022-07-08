@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/radyatamaa/go-cqrs-microservices/pkg/helper"
+	"github.com/radyatamaa/technical-test-aichat/pkg/helper"
 	"gorm.io/gorm"
 
 	validatorGo "github.com/go-playground/validator/v10"

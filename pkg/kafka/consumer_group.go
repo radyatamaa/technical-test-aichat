@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/radyatamaa/go-cqrs-microservices/pkg/zaplogger"
+	"github.com/radyatamaa/technical-test-aichat/pkg/zaplogger"
 	"github.com/segmentio/kafka-go"
 	"github.com/segmentio/kafka-go/compress"
 )

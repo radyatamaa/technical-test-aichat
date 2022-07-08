@@ -2,11 +2,12 @@ package repository
 
 import (
 	"context"
-	"github.com/radyatamaa/go-cqrs-microservices/api_gateway_service/internal/domain"
-	"github.com/radyatamaa/go-cqrs-microservices/pkg/database/paginator"
-	"github.com/radyatamaa/go-cqrs-microservices/pkg/zaplogger"
-	"gorm.io/gorm"
 	"strings"
+
+	"github.com/radyatamaa/technical-test-aichat/internal/domain"
+	"github.com/radyatamaa/technical-test-aichat/pkg/database/paginator"
+	"github.com/radyatamaa/technical-test-aichat/pkg/zaplogger"
+	"gorm.io/gorm"
 )
 
 type mysqlCustomerVoucherRepository struct {
@@ -14,15 +15,12 @@ type mysqlCustomerVoucherRepository struct {
 	db        *gorm.DB
 }
 
-
-
 func NewMysqlCustomerVoucherRepository(db *gorm.DB, zapLogger zaplogger.Logger) domain.MysqlCustomerVoucherRepository {
 	return &mysqlCustomerVoucherRepository{
 		db:        db,
 		zapLogger: zapLogger,
 	}
 }
-
 
 func (c mysqlCustomerVoucherRepository) DB() *gorm.DB {
 	return c.db
@@ -33,7 +31,7 @@ func (c mysqlCustomerVoucherRepository) FetchWithFilter(ctx context.Context, lim
 	if err := p.FindWithFilter(ctx, order, fields, associate, filter, args).Select(strings.Join(fields, ",")).Error; err != nil {
 		return nil, err
 	}
-	return model,nil
+	return model, nil
 }
 
 func (c mysqlCustomerVoucherRepository) SingleWithFilter(ctx context.Context, fields, associate, filter []string, model interface{}, args ...interface{}) error {
@@ -49,10 +47,15 @@ func (c mysqlCustomerVoucherRepository) SingleWithFilter(ctx context.Context, fi
 		}
 	}
 
-	if err := db.First(model, strings.Join(filter, ","), args).Error; err != nil {
-		return err
+	if len(filter) > 0 && len(args) == len(filter) {
+		for i := range filter {
+			db = db.Where(filter[i], args[i])
+		}
 	}
 
+	if err := db.First(model).Error; err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -111,5 +114,3 @@ func (c mysqlCustomerVoucherRepository) StoreWithTx(ctx context.Context, tx *gor
 	}
 	return data.ID, nil
 }
-
-

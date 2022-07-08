@@ -1,28 +1,29 @@
 package main
 
 import (
-	"github.com/radyatamaa/go-cqrs-microservices/api_gateway_service/internal"
-	"github.com/radyatamaa/go-cqrs-microservices/pkg/database"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/radyatamaa/technical-test-aichat/internal"
+	"github.com/radyatamaa/technical-test-aichat/pkg/database"
 
 	beego "github.com/beego/beego/v2/server/web"
 	beegoContext "github.com/beego/beego/v2/server/web/context"
 	"github.com/beego/beego/v2/server/web/filter/cors"
 	"github.com/beego/i18n"
-	"github.com/radyatamaa/go-cqrs-microservices/api_gateway_service/internal/domain"
-	"github.com/radyatamaa/go-cqrs-microservices/api_gateway_service/internal/middlewares"
-	"github.com/radyatamaa/go-cqrs-microservices/pkg/response"
-	"github.com/radyatamaa/go-cqrs-microservices/pkg/zaplogger"
+	"github.com/radyatamaa/technical-test-aichat/internal/domain"
+	"github.com/radyatamaa/technical-test-aichat/internal/middlewares"
+	"github.com/radyatamaa/technical-test-aichat/pkg/response"
+	"github.com/radyatamaa/technical-test-aichat/pkg/zaplogger"
 
-	customerVoucherRepository "github.com/radyatamaa/go-cqrs-microservices/api_gateway_service/internal/customer_voucher/repository"
-	customerVoucherBookRepository "github.com/radyatamaa/go-cqrs-microservices/api_gateway_service/internal/customer_voucher_book/repository"
-	purchaseTransactionRepository "github.com/radyatamaa/go-cqrs-microservices/api_gateway_service/internal/purchase_transaction/repository"
+	customerVoucherRepository "github.com/radyatamaa/technical-test-aichat/internal/customer_voucher/repository"
+	customerVoucherBookRepository "github.com/radyatamaa/technical-test-aichat/internal/customer_voucher_book/repository"
+	purchaseTransactionRepository "github.com/radyatamaa/technical-test-aichat/internal/purchase_transaction/repository"
 
-	customerHandler "github.com/radyatamaa/go-cqrs-microservices/api_gateway_service/internal/customer/delivery/http/v1"
-	customerRepository "github.com/radyatamaa/go-cqrs-microservices/api_gateway_service/internal/customer/repository"
-	customerUsecase "github.com/radyatamaa/go-cqrs-microservices/api_gateway_service/internal/customer/usecase"
+	customerHandler "github.com/radyatamaa/technical-test-aichat/internal/customer/delivery/http/v1"
+	customerRepository "github.com/radyatamaa/technical-test-aichat/internal/customer/repository"
+	customerUsecase "github.com/radyatamaa/technical-test-aichat/internal/customer/usecase"
 )
 
 // @title Api Gateway V1
@@ -34,7 +35,7 @@ import (
 // @query.collection.format multi
 
 func main() {
-	err := beego.LoadAppConfig("ini", "api_gateway_service/conf/app.ini")
+	err := beego.LoadAppConfig("ini", "conf/app.ini")
 	if err != nil {
 		panic(err)
 	}
@@ -51,16 +52,14 @@ func main() {
 	// init data
 	initData := beego.AppConfig.DefaultString("initData", "true")
 
-
 	// database initialization
 	db := database.DB()
-
 
 	// language
 	lang := beego.AppConfig.DefaultString("lang", "en|id")
 	languages := strings.Split(lang, "|")
 	for _, value := range languages {
-		if err := i18n.SetMessage(value, "./api_gateway_service/conf/"+value+".ini"); err != nil {
+		if err := i18n.SetMessage(value, "./conf/"+value+".ini"); err != nil {
 			panic("Failed to set message file for l10n")
 		}
 	}
@@ -92,7 +91,7 @@ func main() {
 		beego.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
 	}
 
-	if initData == "true"{
+	if initData == "true" {
 		domain.SeederData(db)
 	}
 	if beego.BConfig.RunMode != "prod" {
@@ -121,9 +120,9 @@ func main() {
 
 	// init repository
 	customerRepo := customerRepository.NewMysqlCustomerRepository(db, zapLog)
-	customerVoucherRepo := customerVoucherRepository.NewMysqlCustomerVoucherRepository(db,zapLog)
-	customerVoucherBookRepo := customerVoucherBookRepository.NewMysqlCCustomerVoucherBookRepository(db,zapLog)
-	purchaseTransactionRepo := purchaseTransactionRepository.NewPurchaseTransactionRepository(db,zapLog)
+	customerVoucherRepo := customerVoucherRepository.NewMysqlCustomerVoucherRepository(db, zapLog)
+	customerVoucherBookRepo := customerVoucherBookRepository.NewMysqlCCustomerVoucherBookRepository(db, zapLog)
+	purchaseTransactionRepo := purchaseTransactionRepository.NewPurchaseTransactionRepository(db, zapLog)
 
 	// init usecase
 	customerUcase := customerUsecase.NewCustomerUseCase(timeoutContext,

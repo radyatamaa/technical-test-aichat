@@ -2,19 +2,18 @@ package repository
 
 import (
 	"context"
-	"github.com/radyatamaa/go-cqrs-microservices/api_gateway_service/internal/domain"
-	"github.com/radyatamaa/go-cqrs-microservices/pkg/database/paginator"
-	"github.com/radyatamaa/go-cqrs-microservices/pkg/zaplogger"
-	"gorm.io/gorm"
 	"strings"
+
+	"github.com/radyatamaa/technical-test-aichat/internal/domain"
+	"github.com/radyatamaa/technical-test-aichat/pkg/database/paginator"
+	"github.com/radyatamaa/technical-test-aichat/pkg/zaplogger"
+	"gorm.io/gorm"
 )
 
 type mysqlCustomerRepository struct {
 	zapLogger zaplogger.Logger
 	db        *gorm.DB
 }
-
-
 
 func NewMysqlCustomerRepository(db *gorm.DB, zapLogger zaplogger.Logger) domain.MysqlCustomerRepository {
 	return &mysqlCustomerRepository{
@@ -32,7 +31,7 @@ func (c mysqlCustomerRepository) FetchWithFilter(ctx context.Context, limit int,
 	if err := p.FindWithFilter(ctx, order, fields, associate, filter, args).Select(strings.Join(fields, ",")).Error; err != nil {
 		return nil, err
 	}
-	return model,nil
+	return model, nil
 }
 
 func (c mysqlCustomerRepository) SingleWithFilter(ctx context.Context, fields, associate, filter []string, model interface{}, args ...interface{}) error {
@@ -48,10 +47,15 @@ func (c mysqlCustomerRepository) SingleWithFilter(ctx context.Context, fields, a
 		}
 	}
 
-	if err := db.First(model, strings.Join(filter, ","), args).Error; err != nil {
-		return err
+	if len(filter) > 0 && len(args) == len(filter) {
+		for i := range filter {
+			db = db.Where(filter[i], args[i])
+		}
 	}
 
+	if err := db.First(model).Error; err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -110,5 +114,3 @@ func (c mysqlCustomerRepository) StoreWithTx(ctx context.Context, tx *gorm.DB, d
 	}
 	return data.ID, nil
 }
-
-

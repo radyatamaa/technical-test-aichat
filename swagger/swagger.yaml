@@ -1,44 +1,13 @@
 basePath: /api
 definitions:
-  domain.ArticlePaginationResponse:
+  domain.CustomerVerifyPhotoResponse:
     properties:
-      articles:
-        items:
-          $ref: '#/definitions/domain.ArticleResponse'
-        type: array
-      has_more:
-        type: boolean
-      page:
-        type: integer
-      size:
-        type: integer
-      total_count:
-        type: integer
-      total_pages:
-        type: integer
-    type: object
-  domain.ArticleResponse:
-    properties:
-      author:
-        type: string
-      body:
-        type: string
-      created_at:
-        type: string
-      id:
-        type: integer
-      title:
-        type: string
-      updated_at:
+      voucher_code:
         type: string
     type: object
-  domain.CreateArticleRequest:
+  domain.CustomerVoucherBookResponse:
     properties:
-      author:
-        type: string
-      body:
-        type: string
-      title:
+      expired:
         type: string
     type: object
   swagger.BadRequestErrorValidationResponse:
@@ -127,29 +96,18 @@ info:
   title: Api Gateway V1
   version: v1
 paths:
-  /v1/articles:
+  /v1/link-voucher/{id}:
     get:
       parameters:
       - description: lang
         in: header
         name: Accept-Language
         type: string
-      - description: size
-        in: query
-        name: size
+      - description: id customer
+        in: path
+        name: id
+        required: true
         type: integer
-      - description: page
-        in: query
-        name: page
-        type: integer
-      - description: search by body or title
-        in: query
-        name: search
-        type: string
-      - description: filter by author
-        in: query
-        name: author
-        type: string
       produces:
       - application/json
       responses:
@@ -161,7 +119,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/domain.ArticlePaginationResponse'
+                    $ref: '#/definitions/domain.CustomerVoucherBookResponse'
                   type: array
                 errors:
                   items:
@@ -194,21 +152,26 @@ paths:
                     type: object
                   type: array
               type: object
-      summary: Get All Articles
+      summary: GetLinkVoucher
       tags:
-      - Article
+      - Customer
+  /v1/verify-photo/{id}:
     post:
       parameters:
       - description: lang
         in: header
         name: Accept-Language
         type: string
-      - description: request payload
-        in: body
-        name: body
+      - description: file
+        in: formData
+        name: file
         required: true
-        schema:
-          $ref: '#/definitions/domain.CreateArticleRequest'
+        type: file
+      - description: id customer
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -219,7 +182,7 @@ paths:
             - $ref: '#/definitions/swagger.BaseResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/domain.CreateArticleRequest'
+                  $ref: '#/definitions/domain.CustomerVerifyPhotoResponse'
                 errors:
                   items:
                     type: object
@@ -264,7 +227,7 @@ paths:
                     type: object
                   type: array
               type: object
-      summary: Create Data Article
+      summary: VerifyPhoto
       tags:
-      - Article
+      - Customer
 swagger: "2.0"

@@ -2,18 +2,18 @@ package repository
 
 import (
 	"context"
-	"github.com/radyatamaa/go-cqrs-microservices/api_gateway_service/internal/domain"
-	"github.com/radyatamaa/go-cqrs-microservices/pkg/database/paginator"
-	"github.com/radyatamaa/go-cqrs-microservices/pkg/zaplogger"
-	"gorm.io/gorm"
 	"strings"
+
+	"github.com/radyatamaa/technical-test-aichat/internal/domain"
+	"github.com/radyatamaa/technical-test-aichat/pkg/database/paginator"
+	"github.com/radyatamaa/technical-test-aichat/pkg/zaplogger"
+	"gorm.io/gorm"
 )
 
 type mysqlPurchaseTransactionRepository struct {
 	zapLogger zaplogger.Logger
 	db        *gorm.DB
 }
-
 
 func NewPurchaseTransactionRepository(db *gorm.DB, zapLogger zaplogger.Logger) domain.MysqlPurchaseTransactionRepository {
 	return &mysqlPurchaseTransactionRepository{
@@ -26,7 +26,7 @@ func (c mysqlPurchaseTransactionRepository) DB() *gorm.DB {
 	return c.db
 }
 
-func (c mysqlPurchaseTransactionRepository) CountFilter(ctx context.Context, associate []string, model interface{},criteria []string, args ...interface{}) (int, error) {
+func (c mysqlPurchaseTransactionRepository) CountFilter(ctx context.Context, associate []string, model interface{}, criteria []string, args ...interface{}) (int, error) {
 	var count int64
 	db := c.db.WithContext(ctx)
 
@@ -43,10 +43,10 @@ func (c mysqlPurchaseTransactionRepository) CountFilter(ctx context.Context, ass
 	}
 
 	if err := db.Model(model).Count(&count).Error; err != nil {
-		return 0,err
+		return 0, err
 	}
 
-	return int(count),nil
+	return int(count), nil
 }
 
 func (c mysqlPurchaseTransactionRepository) FetchWithFilter(ctx context.Context, limit int, offset int, order string, fields, associate, filter []string, model interface{}, args ...interface{}) (interface{}, error) {
@@ -54,7 +54,7 @@ func (c mysqlPurchaseTransactionRepository) FetchWithFilter(ctx context.Context,
 	if err := p.FindWithFilter(ctx, order, fields, associate, filter, args).Select(strings.Join(fields, ",")).Error; err != nil {
 		return nil, err
 	}
-	return model,nil
+	return model, nil
 }
 
 func (c mysqlPurchaseTransactionRepository) SingleWithFilter(ctx context.Context, fields, associate, filter []string, model interface{}, args ...interface{}) error {
@@ -132,5 +132,3 @@ func (c mysqlPurchaseTransactionRepository) StoreWithTx(ctx context.Context, tx 
 	}
 	return data.ID, nil
 }
-
-

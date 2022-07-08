@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/bluele/zapslack"
-	"github.com/radyatamaa/go-cqrs-microservices/pkg/helper"
+	"github.com/radyatamaa/technical-test-aichat/pkg/helper"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"

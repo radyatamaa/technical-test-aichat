@@ -3,7 +3,7 @@ package kafka
 import (
 	"context"
 
-	"github.com/radyatamaa/go-cqrs-microservices/pkg/zaplogger"
+	"github.com/radyatamaa/technical-test-aichat/pkg/zaplogger"
 	"github.com/segmentio/kafka-go"
 )
 

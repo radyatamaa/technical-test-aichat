@@ -3,44 +3,42 @@ package usecase
 import (
 	"context"
 	"database/sql"
-	beegoContext "github.com/beego/beego/v2/server/web/context"
-	"github.com/radyatamaa/go-cqrs-microservices/api_gateway_service/internal/domain"
-	"github.com/radyatamaa/go-cqrs-microservices/pkg/helper"
-	"github.com/radyatamaa/go-cqrs-microservices/pkg/response"
-	"github.com/radyatamaa/go-cqrs-microservices/pkg/zaplogger"
-	"gorm.io/gorm"
 	"mime/multipart"
 	"strings"
 	"time"
+
+	beegoContext "github.com/beego/beego/v2/server/web/context"
+	"github.com/radyatamaa/technical-test-aichat/internal/domain"
+	"github.com/radyatamaa/technical-test-aichat/pkg/helper"
+	"github.com/radyatamaa/technical-test-aichat/pkg/response"
+	"github.com/radyatamaa/technical-test-aichat/pkg/zaplogger"
+	"gorm.io/gorm"
 )
 
 type customerUseCase struct {
-	zapLogger            zaplogger.Logger
-	contextTimeout       time.Duration
-	mysqlCustomerRepository domain.MysqlCustomerRepository
-	mysqlCustomerVoucherRepository domain.MysqlCustomerVoucherRepository
+	zapLogger                          zaplogger.Logger
+	contextTimeout                     time.Duration
+	mysqlCustomerRepository            domain.MysqlCustomerRepository
+	mysqlCustomerVoucherRepository     domain.MysqlCustomerVoucherRepository
 	mysqlCustomerVoucherBookRepository domain.MysqlCustomerVoucherBookRepository
 	mysqlPurchaseTransactionRepository domain.MysqlPurchaseTransactionRepository
 }
-
-
 
 func NewCustomerUseCase(timeout time.Duration,
 	mysqlCustomerRepository domain.MysqlCustomerRepository,
 	mysqlCustomerVoucherRepository domain.MysqlCustomerVoucherRepository,
 	mysqlCustomerVoucherBookRepository domain.MysqlCustomerVoucherBookRepository,
-mysqlPurchaseTransactionRepository domain.MysqlPurchaseTransactionRepository,
+	mysqlPurchaseTransactionRepository domain.MysqlPurchaseTransactionRepository,
 	zapLogger zaplogger.Logger) domain.CustomerUseCase {
 	return &customerUseCase{
-		mysqlCustomerRepository: mysqlCustomerRepository,
-		mysqlCustomerVoucherRepository : mysqlCustomerVoucherRepository,
-		mysqlPurchaseTransactionRepository : mysqlPurchaseTransactionRepository,
-		contextTimeout:       timeout,
-		zapLogger:            zapLogger,
-		mysqlCustomerVoucherBookRepository : mysqlCustomerVoucherBookRepository,
+		mysqlCustomerRepository:            mysqlCustomerRepository,
+		mysqlCustomerVoucherRepository:     mysqlCustomerVoucherRepository,
+		mysqlPurchaseTransactionRepository: mysqlPurchaseTransactionRepository,
+		contextTimeout:                     timeout,
+		zapLogger:                          zapLogger,
+		mysqlCustomerVoucherBookRepository: mysqlCustomerVoucherBookRepository,
 	}
 }
-
 
 // QUERY CUSTOMER
 func (r customerUseCase) singleCustomerWithFilter(ctx context.Context, filter []string, args ...interface{}) (*domain.Customer, error) {
@@ -58,7 +56,6 @@ func (r customerUseCase) singleCustomerWithFilter(ctx context.Context, filter []
 	return &entity, nil
 }
 
-
 // QUERY CUSTOMER VOUCHER BOOK
 func (r customerUseCase) singleCustomerVoucherBookWithFilter(ctx context.Context, filter []string, args ...interface{}) (*domain.CustomerVoucherBook, error) {
 	var entity domain.CustomerVoucherBook
@@ -75,15 +72,14 @@ func (r customerUseCase) singleCustomerVoucherBookWithFilter(ctx context.Context
 	return &entity, nil
 }
 
-
 // QUERY CUSTOMER VOUCHER
-func (r customerUseCase) fetchCustomerVoucherWithFilter(ctx context.Context, limit, offset int, filter []string,args ...interface{}) ([]domain.CustomerVoucher, error) {
+func (r customerUseCase) fetchCustomerVoucherWithFilter(ctx context.Context, limit, offset int, filter []string, args ...interface{}) ([]domain.CustomerVoucher, error) {
 
 	if purchaseTransaction, err := r.mysqlCustomerVoucherRepository.FetchWithFilter(
 		ctx,
 		limit,
 		offset,
-		"RANDOM ()",
+		"RAND()",
 		[]string{
 			"*",
 		},
@@ -115,10 +111,8 @@ func (r customerUseCase) singleCustomerVoucherWithFilter(ctx context.Context, fi
 	return &entity, nil
 }
 
-
-
 // QUERY PURCHASE TRANSACTION
-func (r customerUseCase) summaryPurchaseTransactionWithFilter(ctx context.Context, filter []string,args ...interface{}) ([]domain.PurchaseTransaction, error) {
+func (r customerUseCase) summaryPurchaseTransactionWithFilter(ctx context.Context, filter []string, args ...interface{}) ([]domain.PurchaseTransaction, error) {
 
 	if purchaseTransaction, err := r.mysqlPurchaseTransactionRepository.FetchWithFilter(
 		ctx,
@@ -126,8 +120,8 @@ func (r customerUseCase) summaryPurchaseTransactionWithFilter(ctx context.Contex
 		0,
 		"transaction_at DESC",
 		[]string{
-			"SUM(total_spent)",
-			"SUM(total_saving)",
+			"SUM(total_spent) AS total_spent",
+			"SUM(total_saving) AS total_saving",
 		},
 		[]string{},
 		filter,
@@ -147,7 +141,7 @@ func (r customerUseCase) summaryPurchaseTransactionWithFilter(ctx context.Contex
 func (r customerUseCase) countPurchaseTransactionWithFilter(ctx context.Context, filter []string, args ...interface{}) (int, error) {
 	var entity domain.PurchaseTransaction
 	var result int
-	result,err := r.mysqlPurchaseTransactionRepository.CountFilter(
+	result, err := r.mysqlPurchaseTransactionRepository.CountFilter(
 		ctx,
 		[]string{},
 		&entity,
@@ -159,54 +153,51 @@ func (r customerUseCase) countPurchaseTransactionWithFilter(ctx context.Context,
 	return result, nil
 }
 
-
-
-func (r customerUseCase) VerifyPhotoCustomer(beegoCtx *beegoContext.Context, customerId int,file *multipart.FileHeader) (*domain.CustomerVerifyPhotoResponse, error) {
+func (r customerUseCase) VerifyPhotoCustomer(beegoCtx *beegoContext.Context, customerId int, file *multipart.FileHeader) (*domain.CustomerVerifyPhotoResponse, error) {
 	c, cancel := context.WithTimeout(beegoCtx.Request.Context(), r.contextTimeout)
 	defer cancel()
 
 	//VALIDATE IMAGE BY SIZE
-	if !strings.Contains(file.Filename,"face") && file.Size < 2000{
+	if !strings.Contains(file.Filename, "face") && file.Size < 2000 {
 		return nil, response.ErrCustomerVerifyImage
 	}
 
-
-	voucherBookCheckCustomer ,err := r.singleCustomerVoucherBookWithFilter(c,
+	voucherBookCheckCustomer, err := r.singleCustomerVoucherBookWithFilter(c,
 		[]string{
 			"customer_id"},
 		customerId)
-	if err != nil && err != gorm.ErrRecordNotFound{
+	if err != nil && err != gorm.ErrRecordNotFound {
 		beegoCtx.Input.SetData("stackTrace", r.zapLogger.SetMessageLog(err))
 		return nil, err
 	}
 
-	if voucherBookCheckCustomer == nil{
-		return nil,response.ErrCustomerNotYetBookVoucher
+	if voucherBookCheckCustomer == nil {
+		return nil, response.ErrCustomerNotYetBookVoucher
 	}
 
-	if time.Now().After(voucherBookCheckCustomer.ExpiredDate){
+	if time.Now().After(voucherBookCheckCustomer.ExpiredDate) {
 		return nil, response.ErrCustomerBookVoucherExpired
 	}
 
 	err = r.mysqlCustomerVoucherRepository.UpdateSelectedField(c,
-		[]string{"customer_id","is_redeem"},
+		[]string{"customer_id", "is_redeem"},
 		map[string]interface{}{
-			"customer_id" : customerId,
-			"is_redeem" : true,
+			"customer_id": customerId,
+			"is_redeem":   true,
 		},
-		int(voucherBookCheckCustomer.CustomerVoucherID.Int32) ,
+		int(voucherBookCheckCustomer.CustomerVoucherID.Int32),
 	)
-	if err != nil{
+	if err != nil {
 		beegoCtx.Input.SetData("stackTrace", r.zapLogger.SetMessageLog(err))
 		return nil, err
 	}
 
-	first ,err := r.singleCustomerVoucherWithFilter(c,[]string{"id"},voucherBookCheckCustomer.CustomerVoucherID)
-	if err != nil{
+	first, err := r.singleCustomerVoucherWithFilter(c, []string{"id"}, voucherBookCheckCustomer.CustomerVoucherID)
+	if err != nil {
 		beegoCtx.Input.SetData("stackTrace", r.zapLogger.SetMessageLog(err))
 		return nil, err
 	}
-	return &domain.CustomerVerifyPhotoResponse{VoucherCode: first.VoucherCode},nil
+	return &domain.CustomerVerifyPhotoResponse{VoucherCode: first.VoucherCode}, nil
 
 }
 
@@ -220,47 +211,43 @@ func (r customerUseCase) GetVoucherByCustomerId(beegoCtx *beegoContext.Context, 
 		return nil, err
 	}
 
-
 	// VALIDATION CUSTOMER ALREADY GET VOUCHER
 	firstCV, err := r.singleCustomerVoucherWithFilter(c, []string{"customer_id =?"}, customerId)
-	if err != nil && err != gorm.ErrRecordNotFound{
+	if err != nil && err != gorm.ErrRecordNotFound {
 		beegoCtx.Input.SetData("stackTrace", r.zapLogger.SetMessageLog(err))
 		return nil, err
 	}
 
-	if firstCV != nil{
-		return nil,response.ErrCustomerAlreadyGetVoucher
+	if firstCV != nil {
+		return nil, response.ErrCustomerAlreadyGetVoucher
 	}
-
-
 
 	// VALIDATION MIN 3 COMPLETE TRANSACTION
 	startDate := time.Now()
-	endDate := startDate.AddDate(0,0,30)
+	endDate := startDate.AddDate(0, 0, 30)
 
-	countPurchaseTransaction ,err := r.countPurchaseTransactionWithFilter(c,
-		[]string{"customer_id","DATE(transaction_at) >= DATE(?)","DATE(transaction_at) <= DATE(?)"},
+	countPurchaseTransaction, err := r.countPurchaseTransactionWithFilter(c,
+		[]string{"customer_id", "DATE(transaction_at) >= DATE(?)", "DATE(transaction_at) <= DATE(?)"},
 		first.ID,
 		startDate,
 		endDate)
-	if err != nil{
+	if err != nil {
 		beegoCtx.Input.SetData("stackTrace", r.zapLogger.SetMessageLog(err))
 		return nil, err
 	}
 
-	if countPurchaseTransaction < 3{
-		return nil,response.ErrTransactionCompletePurchase30Days
+	if countPurchaseTransaction < 3 {
+		return nil, response.ErrTransactionCompletePurchase30Days
 	}
-
 
 	// VALIDATION TRANSACTION MIN 100$
-	summary ,err := r.summaryPurchaseTransactionWithFilter(c,[]string{"customer_id = ?"},first.ID)
-	if err != nil{
+	summary, err := r.summaryPurchaseTransactionWithFilter(c, []string{"customer_id = ?"}, first.ID)
+	if err != nil {
 		beegoCtx.Input.SetData("stackTrace", r.zapLogger.SetMessageLog(err))
 		return nil, err
 	}
 
-	if len(summary) == 0{
+	if len(summary) == 0 {
 		return nil, response.ErrTransactionMinimum
 	}
 
@@ -268,28 +255,24 @@ func (r customerUseCase) GetVoucherByCustomerId(beegoCtx *beegoContext.Context, 
 		return nil, response.ErrTransactionMinimum
 	}
 
-
-
 	// VALIDATION ALREADY BOOK VOUCHER
-	voucherBookCheckCustomer ,err := r.singleCustomerVoucherBookWithFilter(c,
+	voucherBookCheckCustomer, err := r.singleCustomerVoucherBookWithFilter(c,
 		[]string{
-		"customer_id",
-		"expired_date < ?"},
+			"customer_id",
+			"expired_date < ?"},
 		customerId,
 		time.Now())
-	if err != nil && err != gorm.ErrRecordNotFound{
+	if err != nil && err != gorm.ErrRecordNotFound {
 		beegoCtx.Input.SetData("stackTrace", r.zapLogger.SetMessageLog(err))
 		return nil, err
 	}
 
-	if voucherBookCheckCustomer != nil{
-		return nil,response.ErrCustomerAlreadyBookVoucher
+	if voucherBookCheckCustomer != nil {
+		return nil, response.ErrCustomerAlreadyBookVoucher
 	}
 
-
-
-	fetchCV,err := r.fetchCustomerVoucherWithFilter(c,1000,0,[]string{"is_redeem = ?"},false)
-	if err != nil{
+	fetchCV, err := r.fetchCustomerVoucherWithFilter(c, 1000, 0, []string{"is_redeem = ?"}, false)
+	if err != nil {
 		beegoCtx.Input.SetData("stackTrace", r.zapLogger.SetMessageLog(err))
 		return nil, err
 	}
@@ -297,39 +280,39 @@ func (r customerUseCase) GetVoucherByCustomerId(beegoCtx *beegoContext.Context, 
 	customerVoucherId := 0
 	expiredDate := time.Now()
 
-	for i := range fetchCV{
-		voucherBook ,err := r.singleCustomerVoucherBookWithFilter(c,[]string{"customer_voucher_id = ?"},fetchCV[i].ID)
-		if err != nil{
+	for i := range fetchCV {
+		voucherBook, err := r.singleCustomerVoucherBookWithFilter(c, []string{"customer_voucher_id = ?"}, fetchCV[i].ID)
+		if err != nil && err != gorm.ErrRecordNotFound {
 			beegoCtx.Input.SetData("stackTrace", r.zapLogger.SetMessageLog(err))
 			return nil, err
 		}
 
-		if voucherBook != nil{
-			if time.Now().After(voucherBook.ExpiredDate){
+		if voucherBook != nil {
+			if time.Now().After(voucherBook.ExpiredDate) {
 				expiredDate = time.Now().Add(time.Minute * 10)
 				customerVoucherId = fetchCV[i].ID
-				_,err = r.mysqlCustomerVoucherBookRepository.Store(c,domain.CustomerVoucherBook{
-					CustomerID: sql.NullInt32{Int32: int32(first.ID),Valid: true}  ,
-					CustomerVoucherID:sql.NullInt32{Int32: int32(fetchCV[i].ID),Valid: true}  ,
-					ExpiredDate: expiredDate,
+				_, err = r.mysqlCustomerVoucherBookRepository.Store(c, domain.CustomerVoucherBook{
+					CustomerID:        sql.NullInt32{Int32: int32(first.ID), Valid: true},
+					CustomerVoucherID: sql.NullInt32{Int32: int32(fetchCV[i].ID), Valid: true},
+					ExpiredDate:       expiredDate,
 				})
-				if err != nil{
+				if err != nil {
 					beegoCtx.Input.SetData("stackTrace", r.zapLogger.SetMessageLog(err))
 					return nil, err
 				}
-			}else {
+			} else {
 				continue
 			}
 
-		}else {
+		} else {
 			expiredDate = time.Now().Add(time.Minute * 10)
 			customerVoucherId = fetchCV[i].ID
-			_,err = r.mysqlCustomerVoucherBookRepository.Store(c,domain.CustomerVoucherBook{
-				CustomerID: sql.NullInt32{Int32: int32(first.ID),Valid: true}  ,
-				CustomerVoucherID:sql.NullInt32{Int32: int32(fetchCV[i].ID),Valid: true}  ,
-				ExpiredDate: expiredDate,
+			_, err = r.mysqlCustomerVoucherBookRepository.Store(c, domain.CustomerVoucherBook{
+				CustomerID:        sql.NullInt32{Int32: int32(first.ID), Valid: true},
+				CustomerVoucherID: sql.NullInt32{Int32: int32(fetchCV[i].ID), Valid: true},
+				ExpiredDate:       expiredDate,
 			})
-			if err != nil{
+			if err != nil {
 				beegoCtx.Input.SetData("stackTrace", r.zapLogger.SetMessageLog(err))
 				return nil, err
 			}
@@ -338,9 +321,9 @@ func (r customerUseCase) GetVoucherByCustomerId(beegoCtx *beegoContext.Context, 
 		break
 	}
 
-	if customerVoucherId == 0{
-		return nil,response.ErrVoucherNotAvailable
+	if customerVoucherId == 0 {
+		return nil, response.ErrVoucherNotAvailable
 	}
 
-	return &domain.CustomerVoucherBookResponse{Expired: expiredDate.Format(helper.DateTimeFormatDefault)},nil
+	return &domain.CustomerVoucherBookResponse{Expired: expiredDate.Format(helper.DateTimeFormatDefault)}, nil
 }

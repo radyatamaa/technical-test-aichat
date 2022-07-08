@@ -26,15 +26,15 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/v1/articles": {
+        "/v1/link-voucher/{id}": {
             "get": {
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Article"
+                    "Customer"
                 ],
-                "summary": "Get All Articles",
+                "summary": "GetLinkVoucher",
                 "parameters": [
                     {
                         "type": "string",
@@ -44,27 +44,10 @@ var doc = `{
                     },
                     {
                         "type": "integer",
-                        "description": "size",
-                        "name": "size",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "page",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "search by body or title",
-                        "name": "search",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "filter by author",
-                        "name": "author",
-                        "in": "query"
+                        "description": "id customer",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -81,7 +64,7 @@ var doc = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/domain.ArticlePaginationResponse"
+                                                "$ref": "#/definitions/domain.CustomerVoucherBookResponse"
                                             }
                                         },
                                         "errors": {
@@ -144,15 +127,17 @@ var doc = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/v1/verify-photo/{id}": {
             "post": {
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Article"
+                    "Customer"
                 ],
-                "summary": "Create Data Article",
+                "summary": "VerifyPhoto",
                 "parameters": [
                     {
                         "type": "string",
@@ -161,13 +146,18 @@ var doc = `{
                         "in": "header"
                     },
                     {
-                        "description": "request payload",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/domain.CreateArticleRequest"
-                        }
+                        "type": "file",
+                        "description": "file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id customer",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -182,7 +172,7 @@ var doc = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/domain.CreateArticleRequest"
+                                            "$ref": "#/definitions/domain.CustomerVerifyPhotoResponse"
                                         },
                                         "errors": {
                                             "type": "array",
@@ -272,65 +262,18 @@ var doc = `{
         }
     },
     "definitions": {
-        "domain.ArticlePaginationResponse": {
+        "domain.CustomerVerifyPhotoResponse": {
             "type": "object",
             "properties": {
-                "articles": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/domain.ArticleResponse"
-                    }
-                },
-                "has_more": {
-                    "type": "boolean"
-                },
-                "page": {
-                    "type": "integer"
-                },
-                "size": {
-                    "type": "integer"
-                },
-                "total_count": {
-                    "type": "integer"
-                },
-                "total_pages": {
-                    "type": "integer"
-                }
-            }
-        },
-        "domain.ArticleResponse": {
-            "type": "object",
-            "properties": {
-                "author": {
-                    "type": "string"
-                },
-                "body": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "updated_at": {
+                "voucher_code": {
                     "type": "string"
                 }
             }
         },
-        "domain.CreateArticleRequest": {
+        "domain.CustomerVoucherBookResponse": {
             "type": "object",
             "properties": {
-                "author": {
-                    "type": "string"
-                },
-                "body": {
-                    "type": "string"
-                },
-                "title": {
+                "expired": {
                     "type": "string"
                 }
             }

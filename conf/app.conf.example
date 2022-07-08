@@ -10,6 +10,21 @@ EnableDocs = true
 lang="en|id"
 logPath="./logs/api_gateway_service.log"
 slackWebhookUrlLog = ""
-grpcReaderServiceHost = "localhost:5003"
-brokers = "localhost:9092"
-createArticleTopic = "article_create"
+
+[database]
+# debug=true
+driver="postgres"
+host="34.101.192.169"
+username=kreditmu-user
+password=Liofasd00998fsh
+name=kreditmu_cms
+; host="localhost"
+; username=postgres
+; password=udang
+; name=kreditmu_v3_cms
+port=5432
+options="TimeZone=Asia/Jakarta"
+maxOpenConn = 25
+maxIdleConn = 25
+maxLifeTimeConn = 300
+maxIdleTimeConn = 300

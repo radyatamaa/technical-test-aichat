@@ -7,10 +7,10 @@ import (
 	"strconv"
 
 	beego "github.com/beego/beego/v2/server/web"
-	"github.com/radyatamaa/go-cqrs-microservices/api_gateway_service/internal"
-	"github.com/radyatamaa/go-cqrs-microservices/api_gateway_service/internal/domain"
-	"github.com/radyatamaa/go-cqrs-microservices/pkg/response"
-	"github.com/radyatamaa/go-cqrs-microservices/pkg/zaplogger"
+	"github.com/radyatamaa/technical-test-aichat/internal"
+	"github.com/radyatamaa/technical-test-aichat/internal/domain"
+	"github.com/radyatamaa/technical-test-aichat/pkg/response"
+	"github.com/radyatamaa/technical-test-aichat/pkg/zaplogger"
 	"gorm.io/gorm"
 )
 
@@ -23,7 +23,7 @@ type CustomerHandler struct {
 
 func NewCustomerHandler(customerUsecase domain.CustomerUseCase, zapLogger zaplogger.Logger) {
 	pHandler := &CustomerHandler{
-		ZapLogger:      zapLogger,
+		ZapLogger:       zapLogger,
 		CustomerUsecase: customerUsecase,
 	}
 	beego.Router("/api/v1/verify-photo/:id", pHandler, "post:VerifyPhoto")
@@ -41,7 +41,7 @@ func (h *CustomerHandler) Prepare() {
 // @Summary VerifyPhoto
 // @Produce json
 // @Param Accept-Language header string false "lang"
-// @Success 200 {object} swagger.BaseResponse{errors=[]object,data=domain.CreateArticleRequest}
+// @Success 200 {object} swagger.BaseResponse{errors=[]object,data=domain.CustomerVerifyPhotoResponse}
 // @Failure 400 {object} swagger.BadRequestErrorValidationResponse{errors=[]swagger.ValidationErrors,data=object}
 // @Failure 408 {object} swagger.RequestTimeoutResponse{errors=[]object,data=object}
 // @Failure 500 {object} swagger.InternalServerErrorResponse{errors=[]object,data=object}
@@ -62,7 +62,7 @@ func (h *CustomerHandler) VerifyPhoto() {
 		return
 	}
 
-	result,err := h.CustomerUsecase.VerifyPhotoCustomer(h.Ctx, pathParam,fileHeader)
+	result, err := h.CustomerUsecase.VerifyPhotoCustomer(h.Ctx, pathParam, fileHeader)
 	if err != nil {
 		if errors.Is(err, response.ErrCustomerVerifyImage) {
 			h.ResponseError(h.Ctx, http.StatusBadRequest, response.CustomerVerifyImage, response.ErrorCodeText(response.CustomerVerifyImage, h.Locale.Lang), err)

@@ -1,4 +1,4 @@
-# go-cqrs-microservices
+# technical-test-aichat
 
 
 ### Golang CQRS Kafka gRPC Postgresql MongoDB Redis microservices with clean architecture example 👋
@@ -38,10 +38,10 @@ The explanation about this project's structure  can read from this medium's post
 cd $GOPATH/src/github.com/radyatamaa
 
 # Clone into YOUR $GOPATH/src
-git clone https://github.com/radyatamaa/go-cqrs-microservices.git
+git clone https://github.com/radyatamaa/technical-test-aichat.git
 
 #move to project
-cd go-cqrs-microservices
+cd technical-test-aichat
 
 # Run app writer service
 go run write_service/cmd/main.go
@@ -61,10 +61,10 @@ Or with `docker-compose`
 cd $GOPATH/src/github.com/radyatamaa
 
 # Clone into YOUR $GOPATH/src
-git clone https://github.com/radyatamaa/go-cqrs-microservices.git
+git clone https://github.com/radyatamaa/technical-test-aichat.git
 
 #move to project
-cd go-cqrs-microservices
+cd technical-test-aichat
 
 # Run the application
 make run  OR  docker compose -f "docker-compose.yml" up -d --build

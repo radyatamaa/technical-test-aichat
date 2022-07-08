@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/radyatamaa/go-cqrs-microservices/pkg/zaplogger"
+	"github.com/radyatamaa/technical-test-aichat/pkg/zaplogger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
