@@ -64,6 +64,10 @@ func (h *CustomerHandler) VerifyPhoto() {
 
 	result, err := h.CustomerUsecase.VerifyPhotoCustomer(h.Ctx, pathParam, fileHeader)
 	if err != nil {
+		if errors.Is(err, response.ErrCustomerAlreadyGetVoucher) {
+			h.ResponseError(h.Ctx, http.StatusBadRequest, response.CustomerAlreadyGetVoucher, response.ErrorCodeText(response.CustomerAlreadyGetVoucher, h.Locale.Lang), err)
+			return
+		}
 		if errors.Is(err, response.ErrCustomerVerifyImage) {
 			h.ResponseError(h.Ctx, http.StatusBadRequest, response.CustomerVerifyImage, response.ErrorCodeText(response.CustomerVerifyImage, h.Locale.Lang), err)
 			return

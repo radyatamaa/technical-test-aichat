@@ -157,6 +157,15 @@ func (r customerUseCase) VerifyPhotoCustomer(beegoCtx *beegoContext.Context, cus
 	c, cancel := context.WithTimeout(beegoCtx.Request.Context(), r.contextTimeout)
 	defer cancel()
 
+	first, err := r.singleCustomerVoucherWithFilter(c, []string{"customer_id"}, customerId)
+	if err != nil && err != gorm.ErrRecordNotFound{
+		beegoCtx.Input.SetData("stackTrace", r.zapLogger.SetMessageLog(err))
+		return nil, err
+	}
+
+	if first != nil{
+		return nil, response.ErrCustomerAlreadyGetVoucher
+	}
 
 	voucherBookCheckCustomer, err := r.singleCustomerVoucherBookWithFilter(c,
 		[]string{
@@ -196,7 +205,7 @@ func (r customerUseCase) VerifyPhotoCustomer(beegoCtx *beegoContext.Context, cus
 		return nil, err
 	}
 
-	first, err := r.singleCustomerVoucherWithFilter(c, []string{"id"}, voucherBookCheckCustomer.CustomerVoucherID)
+	first, err = r.singleCustomerVoucherWithFilter(c, []string{"id"}, voucherBookCheckCustomer.CustomerVoucherID)
 	if err != nil {
 		beegoCtx.Input.SetData("stackTrace", r.zapLogger.SetMessageLog(err))
 		return nil, err
@@ -282,7 +291,7 @@ func (r customerUseCase) GetVoucherByCustomerId(beegoCtx *beegoContext.Context, 
 	}
 
 	customerVoucherId := 0
-	expiredDate := time.Now()
+	expiredDate := time.Now().Add(time.Minute * 1)
 
 	for i := range fetchCV {
 		voucherBook, err := r.singleCustomerVoucherBookWithFilter(c, []string{"customer_voucher_id = ?"}, fetchCV[i].ID)
@@ -293,7 +302,6 @@ func (r customerUseCase) GetVoucherByCustomerId(beegoCtx *beegoContext.Context, 
 
 		if voucherBook != nil {
 			if time.Now().After(voucherBook.ExpiredDate) {
-				expiredDate = time.Now().Add(time.Minute * 10)
 				customerVoucherId = fetchCV[i].ID
 				_, err = r.mysqlCustomerVoucherBookRepository.Store(c, domain.CustomerVoucherBook{
 					CustomerID:        sql.NullInt32{Int32: int32(first.ID), Valid: true},
@@ -309,7 +317,6 @@ func (r customerUseCase) GetVoucherByCustomerId(beegoCtx *beegoContext.Context, 
 			}
 
 		} else {
-			expiredDate = time.Now().Add(time.Minute * 10)
 			customerVoucherId = fetchCV[i].ID
 			_, err = r.mysqlCustomerVoucherBookRepository.Store(c, domain.CustomerVoucherBook{
 				CustomerID:        sql.NullInt32{Int32: int32(first.ID), Valid: true},
