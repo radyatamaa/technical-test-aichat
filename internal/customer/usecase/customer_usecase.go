@@ -157,10 +157,6 @@ func (r customerUseCase) VerifyPhotoCustomer(beegoCtx *beegoContext.Context, cus
 	c, cancel := context.WithTimeout(beegoCtx.Request.Context(), r.contextTimeout)
 	defer cancel()
 
-	//VALIDATE IMAGE BY SIZE
-	if !strings.Contains(file.Filename, "face") && file.Size < 2000 {
-		return nil, response.ErrCustomerVerifyImage
-	}
 
 	voucherBookCheckCustomer, err := r.singleCustomerVoucherBookWithFilter(c,
 		[]string{
@@ -178,6 +174,14 @@ func (r customerUseCase) VerifyPhotoCustomer(beegoCtx *beegoContext.Context, cus
 	if time.Now().After(voucherBookCheckCustomer.ExpiredDate) {
 		return nil, response.ErrCustomerBookVoucherExpired
 	}
+
+	//VALIDATE IMAGE BY SIZE
+	sizeKb := float64(file.Size / 1024)
+	if !strings.Contains(file.Filename, "face") || (sizeKb < 50) {
+		return nil, response.ErrCustomerVerifyImage
+	}
+
+
 
 	err = r.mysqlCustomerVoucherRepository.UpdateSelectedField(c,
 		[]string{"customer_id", "is_redeem"},
@@ -259,7 +263,7 @@ func (r customerUseCase) GetVoucherByCustomerId(beegoCtx *beegoContext.Context, 
 	voucherBookCheckCustomer, err := r.singleCustomerVoucherBookWithFilter(c,
 		[]string{
 			"customer_id",
-			"expired_date < ?"},
+			"expired_date > ?"},
 		customerId,
 		time.Now())
 	if err != nil && err != gorm.ErrRecordNotFound {
