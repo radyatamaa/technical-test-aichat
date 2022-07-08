@@ -93,9 +93,9 @@ func (p *Paginator) Find(ctx context.Context) *gorm.DB {
 	return p.db.Scopes(paginateScope(ctx, p.CurrentPage, p.PageSize)).Find(p.Records)
 }
 
-func (p *Paginator) FindWithFilter(ctx context.Context, order string, fields, associate []string, args ...interface{}) *gorm.DB {
+func (p *Paginator) FindWithFilter(ctx context.Context, order string, fields, associate, criteria []string, args ...interface{}) *gorm.DB {
 
-	db := p.db.Scopes(paginateScope(ctx, p.CurrentPage, p.PageSize))
+	db := p.db.WithContext(ctx).Limit(p.PageSize).Offset(p.CurrentPage)
 	if len(fields) > 0 {
 		db = db.Select(strings.Join(fields, ","))
 	}
@@ -104,13 +104,23 @@ func (p *Paginator) FindWithFilter(ctx context.Context, order string, fields, as
 			db.Joins(v)
 		}
 	}
-	if len(args) > 0 {
-		result := db.Order(order).Find(p.Records, args...)
-		p.updatePageInfoWithFilter(result, associate)
-		return result
-	} else {
-		result := db.Order(order).Find(p.Records)
-		p.updatePageInfoWithFilter(result, associate)
-		return result
+	if len(criteria) > 0 && len(args) == len(criteria) {
+		for i := range criteria {
+			db = db.Where(criteria[i], args[i])
+		}
 	}
+	if len(criteria) > 0 {
+		for i := range criteria {
+			if strings.Contains(criteria[i],"OR"){
+				db = db.Where(criteria[i])
+			}
+
+		}
+
+	}
+
+	result := db.Order(order).Find(p.Records)
+	p.updatePageInfoWithFilter(result,associate)
+
+	return result
 }

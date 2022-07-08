@@ -20,58 +20,57 @@ Format : Format XXXX-XXX-XXX
 */
 
 const (
-	ApiKeyNotRegisteredCodeError    = "KDMU-AUTH-001"
-	MissingApiKeyCodeError          = "KDMU-AUTH-002"
-	InvalidApiKeyCodeError          = "KDMU-AUTH-003"
-	UnauthorizedCodeError           = "KDMU-AUTH-004"
-	RequestForbiddenCodeError       = "KDMU-API-001"
-	ResourceNotFoundCodeError       = "KDMU-API-002"
-	RequestTimeoutCodeError         = "KDMU-API-003"
-	ApiValidationCodeError          = "KDMU-API-004"
-	DataNotFoundCodeError           = "KDMU-API-005"
-	ServiceCommunicationErrorCode   = "KDMU-API-006"
-	InvalidCredentialCodeError      = "KDMU-API-007"
-	InvalidTokenCodeError           = "KDMU-API-008"
-	ExpiredTokenCodeError           = "KDMU-API-009"
-	MissingTokenCodeError           = "KDMU-API-010"
-	AuthElseWhereCodeError          = "KDMU-API-011"
-	NotAllowedTransaction           = "KDMU-API-012"
-	TransactionAlreadyExist         = "KDMU-API-013"
-	TransactionRejected             = "KDMU-API-014"
-	TransactionNotFound             = "KDMU-API-015"
-	InsufficientLimit               = "KDMU-API-016"
-	InvalidReturnAmount             = "KDMU-API-017"
-	DataAlreadyExistCodeError       = "KDMU-API-018"
-	InvalidMinMax                   = "KDMU-API-019"
-	InvalidActiveDate               = "KDMU-API-020"
-	CustomerStatusNotFoundErrorCode = "KDMU-API-021"
-	LimitStatusNotFoundErrorCode    = "KDMU-API-022"
-	CustomerIDNotFoundErrorCode     = "KDMU-API-023"
-	TenorIDNotFoundErrorCode        = "KDMU-API-024"
-	InvalidActiveEndDate            = "KDMU-API-025"
-	QueryParamInvalidCode           = "KDMU-API-026"
-	PathParamInvalidCode            = "KDMU-API-027"
-	ServerErrorCode                 = "KDMU-API-999"
+	ApiKeyNotRegisteredCodeError    = "ERROR-AUTH-001"
+	MissingApiKeyCodeError          = "ERROR-AUTH-002"
+	InvalidApiKeyCodeError          = "ERROR-AUTH-003"
+	UnauthorizedCodeError           = "ERROR-AUTH-004"
+	RequestForbiddenCodeError       = "ERROR-API-001"
+	ResourceNotFoundCodeError       = "ERROR-API-002"
+	RequestTimeoutCodeError         = "ERROR-API-003"
+	ApiValidationCodeError          = "ERROR-API-004"
+	DataNotFoundCodeError           = "ERROR-API-005"
+	InvalidCredentialCodeError      = "ERROR-API-007"
+	InvalidTokenCodeError           = "ERROR-API-008"
+	ExpiredTokenCodeError           = "ERROR-API-009"
+	MissingTokenCodeError           = "ERROR-API-010"
+	AuthElseWhereCodeError          = "ERROR-API-011"
+	NotAllowedTransaction           = "ERROR-API-012"
+	TransactionAlreadyExist         = "ERROR-API-013"
+	TransactionRejected             = "ERROR-API-014"
+	TransactionNotFound             = "ERROR-API-015"
+	InsufficientLimit               = "ERROR-API-016"
+	InvalidReturnAmount             = "ERROR-API-017"
+	DataAlreadyExistCodeError       = "ERROR-API-018"
+	InvalidMinMax                   = "ERROR-API-019"
+	InvalidActiveDate               = "ERROR-API-020"
+	CustomerStatusNotFoundErrorCode = "ERROR-API-021"
+	LimitStatusNotFoundErrorCode    = "ERROR-API-022"
+	CustomerIDNotFoundErrorCode     = "ERROR-API-023"
+	TenorIDNotFoundErrorCode        = "ERROR-API-024"
+	InvalidActiveEndDate            = "ERROR-API-025"
+	QueryParamInvalidCode           = "ERROR-API-026"
+	PathParamInvalidCode            = "ERROR-API-027"
+	ServerErrorCode                 = "ERROR-API-999"
+
+	VoucherNotAvailable               = "ERROR-API-028"
+	TransactionCompletePurchase30Days = "ERROR-API-029"
+	TransactionMinimum                = "ERROR-API-030"
+	CustomerAlreadyBookVoucher        = "ERROR-API-031"
+	CustomerAlreadyGetVoucher         = "ERROR-API-032"
+	CustomerNotYetBookVoucher         = "ERROR-API-033"
+	CustomerBookVoucherExpired        = "ERROR-API-034"
+	CustomerVerifyImage               = "ERROR-API-035"
 )
 
 var (
-	ErrInsufficientLimit         = errors.New("insufficient limit")
-	ErrRejectTransaction         = errors.New("transaction rejected")
-	ErrTransactionNotAllowed     = errors.New("not allowed transaction")
-	ErrTransactionAlreadyExist   = errors.New("transaction already exist")
-	ErrTransactionNotFound       = errors.New("transaction not found")
-	ErrInvalidReturnAmount       = errors.New("invalid return amount")
-	ErrDataAlreadyExist          = errors.New("data already exist")
-	ErrMinMoreThanMax            = errors.New("minimal can't be more than maximal amount")
-	ErrActiveMoreThanExpired     = errors.New("active date can't be more than expired date")
-	ErrActiveMoreThanEnd         = errors.New("active date can't be more than end date")
-	ErrCustomerStatusNotFound    = errors.New("customer_status_id not found")
-	ErrLimitStatusNotFound       = errors.New("limit_status_id not found")
-	ErrQueryParamInvalid         = errors.New("query param is invalid")
-	ErrPathParamInvalid          = errors.New("path param is invalid")
-	ErrCustomerIDNotFound        = errors.New("customer_id not found")
-	ErrTenorIDNotFound           = errors.New("tenor id not found")
-	ErrServiceCommunicationError = errors.New("service communication error")
+	ErrVoucherNotAvailable               = errors.New("voucher not available")
+	ErrTransactionCompletePurchase30Days = errors.New("transaction purchase complete minimum 3")
+	ErrTransactionMinimum                = errors.New("transaction minimum $100")
+	ErrCustomerAlreadyBookVoucher        = errors.New("customer already book voucher")
+	ErrCustomerAlreadyGetVoucher         = errors.New("customer already redeem voucher")
+	ErrCustomerNotYetBookVoucher         = errors.New("customer not have voucher")
+	ErrCustomerBookVoucherExpired        = errors.New("voucher customer expired")
+	ErrCustomerVerifyImage               = errors.New("invalid verify image ,is not face")
 )
 
 func ErrorCodeText(code, locale string, args ...interface{}) string {
@@ -138,6 +137,22 @@ func ErrorCodeText(code, locale string, args ...interface{}) string {
 		return i18n.Tr(locale, "message.errorQueryParamInvalid", args)
 	case PathParamInvalidCode:
 		return i18n.Tr(locale, "message.errorPathParamInvalid", args)
+	case VoucherNotAvailable:
+		return i18n.Tr(locale, "message.errorVoucherNotAvailable", args)
+	case TransactionCompletePurchase30Days:
+		return i18n.Tr(locale, "message.errorTransactionCompletePurchase30Days", args)
+	case TransactionMinimum:
+		return i18n.Tr(locale, "message.errorTransactionMinimum", args)
+	case CustomerAlreadyBookVoucher:
+		return i18n.Tr(locale, "message.errorCustomerAlreadyBookVoucher", args)
+	case CustomerAlreadyGetVoucher:
+		return i18n.Tr(locale, "message.errorCustomerAlreadyGetVoucher", args)
+	case CustomerNotYetBookVoucher:
+		return i18n.Tr(locale, "message.errorCustomerNotYetBookVoucher", args)
+	case CustomerBookVoucherExpired:
+		return i18n.Tr(locale, "message.errorCustomerBookVoucherExpired", args)
+	case CustomerVerifyImage:
+		return i18n.Tr(locale, "message.errorCustomerVerifyImage", args)
 	default:
 		return ""
 	}
