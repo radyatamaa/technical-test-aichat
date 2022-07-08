@@ -291,7 +291,7 @@ func (r customerUseCase) GetVoucherByCustomerId(beegoCtx *beegoContext.Context, 
 	}
 
 	customerVoucherId := 0
-	expiredDate := time.Now().Add(time.Minute * 1)
+	expiredDate := time.Now().Add(time.Minute * 10)
 
 	for i := range fetchCV {
 		voucherBook, err := r.singleCustomerVoucherBookWithFilter(c, []string{"customer_voucher_id = ?"}, fetchCV[i].ID)
