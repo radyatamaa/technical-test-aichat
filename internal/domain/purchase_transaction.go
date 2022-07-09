@@ -2,15 +2,14 @@ package domain
 
 import (
 	"context"
-	"database/sql"
 	"gorm.io/gorm"
 	"time"
 )
 
 type PurchaseTransaction struct {
 	ID        int            `gorm:"column:id;primarykey;autoIncrement:true"`
-	CustomerID  sql.NullInt32 `gorm:"type:int;column:customer_id"`
-	//Customer               Customer       `gorm:"foreignkey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;->"`
+	CustomerID  int `gorm:"type:bigint(20);column:customer_id"`
+	Customer               Customer       `gorm:"foreignkey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;->"`
 	TotalSpent     float64         `gorm:"type:decimal(10,2);column:total_spent"`
 	TotalSaving     float64         `gorm:"type:decimal(10,2);column:total_saving"`
 	TransactionAt time.Time      `gorm:"column:transaction_at"`

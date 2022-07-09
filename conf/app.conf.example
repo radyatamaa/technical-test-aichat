@@ -8,22 +8,19 @@ autorender = false
 copyrequestbody = true
 EnableDocs = true
 lang="en|id"
-logPath="./logs/api_gateway_service.log"
+logPath="./logs/api.log"
 slackWebhookUrlLog = ""
+initData=true
 
 [database]
 # debug=true
-driver="postgres"
-host="34.101.192.169"
-username=kreditmu-user
-password=Liofasd00998fsh
-name=kreditmu_cms
-; host="localhost"
-; username=postgres
-; password=udang
-; name=kreditmu_v3_cms
-port=5432
-options="TimeZone=Asia/Jakarta"
+driver="mysql"
+host="localhost"
+username=root
+password=
+name=customer
+port=3306
+options="charset=utf8mb4&parseTime=True&loc=Local"
 maxOpenConn = 25
 maxIdleConn = 25
 maxLifeTimeConn = 300

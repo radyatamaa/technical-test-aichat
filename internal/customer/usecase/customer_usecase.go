@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"database/sql"
 	"mime/multipart"
 	"strings"
 	"time"
@@ -198,7 +197,7 @@ func (r customerUseCase) VerifyPhotoCustomer(beegoCtx *beegoContext.Context, cus
 			"customer_id": customerId,
 			"is_redeem":   true,
 		},
-		int(voucherBookCheckCustomer.CustomerVoucherID.Int32),
+		voucherBookCheckCustomer.CustomerVoucherID,
 	)
 	if err != nil {
 		beegoCtx.Input.SetData("stackTrace", r.zapLogger.SetMessageLog(err))
@@ -304,8 +303,8 @@ func (r customerUseCase) GetVoucherByCustomerId(beegoCtx *beegoContext.Context, 
 			if time.Now().After(voucherBook.ExpiredDate) {
 				customerVoucherId = fetchCV[i].ID
 				_, err = r.mysqlCustomerVoucherBookRepository.Store(c, domain.CustomerVoucherBook{
-					CustomerID:        sql.NullInt32{Int32: int32(first.ID), Valid: true},
-					CustomerVoucherID: sql.NullInt32{Int32: int32(fetchCV[i].ID), Valid: true},
+					CustomerID:        first.ID,
+					CustomerVoucherID: fetchCV[i].ID,
 					ExpiredDate:       expiredDate,
 				})
 				if err != nil {
@@ -319,8 +318,8 @@ func (r customerUseCase) GetVoucherByCustomerId(beegoCtx *beegoContext.Context, 
 		} else {
 			customerVoucherId = fetchCV[i].ID
 			_, err = r.mysqlCustomerVoucherBookRepository.Store(c, domain.CustomerVoucherBook{
-				CustomerID:        sql.NullInt32{Int32: int32(first.ID), Valid: true},
-				CustomerVoucherID: sql.NullInt32{Int32: int32(fetchCV[i].ID), Valid: true},
+				CustomerID:        first.ID,
+				CustomerVoucherID: fetchCV[i].ID,
 				ExpiredDate:       expiredDate,
 			})
 			if err != nil {

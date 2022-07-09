@@ -2,7 +2,6 @@ package domain
 
 import (
 	"context"
-	"database/sql"
 	"mime/multipart"
 	"time"
 
@@ -62,44 +61,83 @@ func SeederData(db *gorm.DB) {
 		}
 		db.Create(&dataCustomer[i])
 
-		datapcsTransaction := []PurchaseTransaction{
-			PurchaseTransaction{
-				ID:            0,
-				CustomerID:    sql.NullInt32{Int32: int32(dataCustomer[i].ID), Valid: true},
-				//Customer:      Customer{},
-				TotalSpent:    100,
-				TotalSaving:   50,
-				TransactionAt: time.Now(),
-			},
-			PurchaseTransaction{
-				ID:            0,
-				CustomerID:    sql.NullInt32{Int32: int32(dataCustomer[i].ID), Valid: true},
-				//Customer:      Customer{},
-				TotalSpent:    100,
-				TotalSaving:   50,
-				TransactionAt: time.Now(),
-			},
-			PurchaseTransaction{
-				ID:            0,
-				CustomerID:    sql.NullInt32{Int32: int32(dataCustomer[i].ID), Valid: true},
-				//Customer:      Customer{},
-				TotalSpent:    100,
-				TotalSaving:   50,
-				TransactionAt: time.Now(),
-			},
+
+		if dataCustomer[i].ID == 10 {
+			//SEEDER FOR NEGATIVE CASE 30 DAYS PURCHASE TRANSACTION < 3
+			datapcsTransaction := []PurchaseTransaction{
+				PurchaseTransaction{
+					ID:            0,
+					CustomerID:    dataCustomer[i].ID,
+					TotalSpent:    100,
+					TotalSaving:   50,
+					TransactionAt: time.Now(),
+				},
+			}
+			db.Create(&datapcsTransaction)
+		}else if dataCustomer[i].ID == 11 {
+			//SEEDER FOR NEGATIVE CASE TOTAL TRANSACTION < 100$
+			datapcsTransaction := []PurchaseTransaction{
+				PurchaseTransaction{
+					ID:            0,
+					CustomerID:    dataCustomer[i].ID,
+					TotalSpent:    50,
+					TotalSaving:   50,
+					TransactionAt: time.Now(),
+				},
+				PurchaseTransaction{
+					ID:            0,
+					CustomerID:    dataCustomer[i].ID,
+					TotalSpent:    1,
+					TotalSaving:   50,
+					TransactionAt: time.Now(),
+				},
+				PurchaseTransaction{
+					ID:            0,
+					CustomerID:    dataCustomer[i].ID,
+					TotalSpent:    10,
+					TotalSaving:   50,
+					TransactionAt: time.Now(),
+				},
+			}
+			db.Create(&datapcsTransaction)
+		}else {
+
+			datapcsTransaction := []PurchaseTransaction{
+				PurchaseTransaction{
+					ID:            0,
+					CustomerID:    dataCustomer[i].ID,
+					//Customer:      Customer{},
+					TotalSpent:    100,
+					TotalSaving:   50,
+					TransactionAt: time.Now(),
+				},
+				PurchaseTransaction{
+					ID:            0,
+					CustomerID:    dataCustomer[i].ID,
+					TotalSpent:    100,
+					TotalSaving:   50,
+					TransactionAt: time.Now(),
+				},
+				PurchaseTransaction{
+					ID:            0,
+					CustomerID:    dataCustomer[i].ID,
+					TotalSpent:    100,
+					TotalSaving:   50,
+					TransactionAt: time.Now(),
+				},
+			}
+
+			db.Create(&datapcsTransaction)
 		}
 
-		db.Create(&datapcsTransaction)
 	}
-
-
 
 
 	dataCustomerVoucher := make([]CustomerVoucher, 1000)
 	for i := range dataCustomerVoucher {
 		dataCustomerVoucher[i] = CustomerVoucher{
 			ID:          0,
-			CustomerID:  sql.NullInt32{},
+			//CustomerID:  sql.NullInt32{},
 			VoucherCode: helper.RandomString(10),
 			IsRedeem:    false,
 		}
