@@ -28,7 +28,7 @@ git clone https://github.com/radyatamaa/technical-test-aichat.git
 cd technical-test-aichat
 
 # Run app 
-go run cmd/main.go
+go run main.go
 
 # Open at browser this url
 http://localhost:8082/swagger/index.html
